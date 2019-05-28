@@ -18,8 +18,6 @@ import {
   Form
 } from 'native-base';
 
-import ImagePicker from 'react-native-imagepicker';
-
 class AddContact extends Component {
   static navigationOptions = {
     title: 'Add Contact'
@@ -31,38 +29,30 @@ class AddContact extends Component {
       lname: '',
       phonenumber: 0,
       email: '',
-      address: '',
-      photo: ''
+      address: ''
     };
   }
 
-  addContact = async (fname, lname, phonenumber, email, address) => {
+  addContact = async () => {
     if (
-      fname !== '' &&
-      lname !== '' &&
-      email !== '' &&
-      phonenumber != 0 &&
-      address !== ''
+      this.state.fname !== '' &&
+      this.state.lname !== '' &&
+      this.state.email !== '' &&
+      this.state.phonenumber != 0 &&
+      this.state.address !== ''
     ) {
-      this.setState({
-        fname: '',
-        lname: '',
-        phonenumber: 0,
-        email: '',
-        address: ''
-      });
       let contact = {
-        fname: this.state.fnmae,
+        fname: this.state.fname,
         lname: this.state.lname,
         phonenumber: this.state.phonenumber,
         email: this.state.email,
-        address: this.state.address,
-        photo: this.state.photo
+        address: this.state.address
       };
       // Saving to Phone Storage
       await AsyncStorage.setItem(Date.now().toString(), JSON.stringify(contact))
         .then(() => {
           this.props.navigation.goBack();
+          console.log(`firstName: ${this.state.fname}`);
         })
         .catch(err => {
           console.log(err);
@@ -126,15 +116,7 @@ class AddContact extends Component {
                 <Button
                   primary
                   full
-                  onPress={() =>
-                    this.addContact(
-                      this.state.fname,
-                      this.state.lname,
-                      this.state.phonenumber,
-                      this.state.email,
-                      this.state.address
-                    )
-                  }
+                  onPress={() => this.addContact()}
                   style={{
                     alignItems: 'center',
                     justifyContent: 'center',

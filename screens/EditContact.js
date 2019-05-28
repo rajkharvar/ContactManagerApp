@@ -5,7 +5,7 @@ class EditContact extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <Text>EditContact</Text>
+        <Text>Edit Contact</Text>
       </View>
     );
   }

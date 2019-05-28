@@ -7,6 +7,7 @@ import {
   AsyncStorage,
   FlatList
 } from 'react-native';
+import { Card } from 'native-base';
 
 class Home extends Component {
   static navigationOptions = {
@@ -21,6 +22,7 @@ class Home extends Component {
 
   componentWillMount() {
     // This is required if the User adds a new Contact should be updated to Home screen As well
+
     this.props.navigation.addListener('willFocus', () => {
       this.getAllContacts();
     });
@@ -39,9 +41,9 @@ class Home extends Component {
                 if (JSON.parse(a[1]).fname > JSON.parse(b[1]).fname) {
                   return 1;
                 }
+                return 0;
               })
             });
-            console.log(this.state.allContacts);
           });
         })
         .catch(error => {
@@ -59,7 +61,58 @@ class Home extends Component {
           <FlatList
             data={this.state.allContacts}
             renderItem={({ item }) => {
-              return <Text>Jamboo</Text>;
+              contact = JSON.parse(item[1]);
+              console.log(`contact: ${contact}`);
+              return (
+                <TouchableOpacity
+                  onPress={() =>
+                    this.props.navigation.navigate('ViewContact', {
+                      key: item[0].toString()
+                    })
+                  }
+                >
+                  <Card>
+                    <View style={{ flexDirection: 'row' }}>
+                      <View
+                        style={{
+                          width: 80,
+                          height: 80,
+                          borderRadius: 50,
+                          marginVertical: 12,
+                          backgroundColor: '#336699',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          opacity: 0.7
+                        }}
+                      >
+                        <Text style={{ fontSize: 40, color: '#fff' }}>
+                          {contact.fname[0].toUpperCase()}
+                        </Text>
+                      </View>
+                      <View style={{ marginLeft: 12, flexDirection: 'column' }}>
+                        <Text
+                          style={{
+                            color: '#336699',
+                            fontSize: 24,
+                            marginTop: 20
+                          }}
+                        >
+                          {contact.fname} {contact.lname}
+                        </Text>
+                        <Text
+                          style={{
+                            color: '#336699',
+                            paddingTop: 12,
+                            fontSize: 18
+                          }}
+                        >
+                          {contact.phonenumber}
+                        </Text>
+                      </View>
+                    </View>
+                  </Card>
+                </TouchableOpacity>
+              );
             }}
             keyExtractor={(item, index) => item[0].toString()}
           />
