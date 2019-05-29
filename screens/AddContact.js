@@ -136,6 +136,7 @@ class AddContact extends Component {
                 </Button>
               </View>
             </Form>
+            <View style={{ flex: 1, backgroundColor: '#fff', height: 400 }} />
           </ScrollView>
         </Container>
       </TouchableWithoutFeedback>

@@ -57,23 +57,6 @@ class ViewContact extends Component {
       phoneNumber = `tel:${phone}`;
     }
 
-    // Send Message
-    sendMessage = phone => {
-      console.log(phone);
-      let message = `sms:${phone}`;
-      Linking.canOpenURL(message)
-        .then(supported => {
-          if (!supported) {
-            Alert.alert('Unable to redirect to messages');
-          } else {
-            return Linking.openURL(message);
-          }
-        })
-        .catch(err => {
-          console.log(err);
-        });
-    };
-
     // Does the device is able to call from dialer
     Linking.canOpenURL(phoneNumber).then(supported => {
       if (!supported) {
@@ -82,6 +65,22 @@ class ViewContact extends Component {
         return Linking.openURL(phoneNumber);
       }
     });
+  };
+
+  // Send Message
+  sendMsg = phone => {
+    let message = `sms:${phone}`;
+    Linking.canOpenURL(message)
+      .then(supported => {
+        if (!supported) {
+          Alert.alert('Unable to redirect to messages');
+        } else {
+          return Linking.openURL(message);
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      });
   };
 
   // RemoveContact
@@ -151,7 +150,9 @@ class ViewContact extends Component {
               <FontAwesome name='phone' size={30} />
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() => this.sendMessage(this.state.phonenumber)}
+              onPress={() => {
+                this.sendMsg(this.state.phonenumber);
+              }}
             >
               <Entypo name='new-message' size={30} />
             </TouchableOpacity>
