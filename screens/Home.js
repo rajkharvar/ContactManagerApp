@@ -62,7 +62,6 @@ class Home extends Component {
             data={this.state.allContacts}
             renderItem={({ item }) => {
               contact = JSON.parse(item[1]);
-              console.log(`contact: ${contact}`);
               return (
                 <TouchableOpacity
                   onPress={() =>
@@ -135,6 +134,7 @@ const styles = StyleSheet.create({
     flex: 1
   },
   addButtonContainer: {
+    flex: 1,
     position: 'absolute',
     right: 0,
     bottom: 0,

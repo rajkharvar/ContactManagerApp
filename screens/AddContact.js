@@ -27,7 +27,7 @@ class AddContact extends Component {
     this.state = {
       fnmae: '',
       lname: '',
-      phonenumber: 0,
+      phonenumber: '',
       email: '',
       address: ''
     };
@@ -38,7 +38,7 @@ class AddContact extends Component {
       this.state.fname !== '' &&
       this.state.lname !== '' &&
       this.state.email !== '' &&
-      this.state.phonenumber != 0 &&
+      this.state.phonenumber !== '' &&
       this.state.address !== ''
     ) {
       let contact = {

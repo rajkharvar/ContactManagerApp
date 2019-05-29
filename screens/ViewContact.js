@@ -1,25 +1,39 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, AsyncStorage } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  AsyncStorage,
+  Platform,
+  Linking,
+  Alert,
+  ScrollView,
+  TouchableOpacity
+} from 'react-native';
+import { Card, CardItem, Button } from 'native-base';
+import { FontAwesome } from '@expo/vector-icons';
+import { Entypo } from '@expo/vector-icons';
 
 class ViewContact extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      fname: '',
-      lname: '',
-      phonenumber: '',
-      email: '',
-      address: ''
+      fname: 'SampleText',
+      lname: 'SampleText',
+      phonenumber: 'SampleText',
+      email: 'SampleText',
+      address: 'SampleText',
+      key: 'SampleText'
     };
   }
-  static navigationOptions = {
-    title: ''
-  };
-  componentDidMount() {
-    let key = this.props.navigation.getParam('key', '1');
-    this.fetchContactDetails(key);
+  componentWillMount() {
+    this.props.navigation.addListener('willFocus', () => {
+      let key = this.props.navigation.getParam('key', '');
+      this.fetchContactDetails(key);
+    });
   }
 
+  // Getting all Contacts from Local Storage
   fetchContactDetails = async key => {
     await AsyncStorage.getItem(key).then(data => {
       let contact = JSON.parse(data);
@@ -28,32 +42,178 @@ class ViewContact extends Component {
         lname: contact.lname,
         phonenumber: contact.phonenumber,
         email: contact.email,
-        address: contact.address
+        address: contact.address,
+        key: key
       });
     });
   };
 
+  // Call Number
+  callNumber = phone => {
+    let phoneNumber;
+    if (Platform.OS === 'ios') {
+      phoneNumber = `telpromt:${phone}`;
+    } else {
+      phoneNumber = `tel:${phone}`;
+    }
+
+    // Send Message
+    sendMessage = phone => {
+      console.log(phone);
+      let message = `sms:${phone}`;
+      Linking.canOpenURL(message)
+        .then(supported => {
+          if (!supported) {
+            Alert.alert('Unable to redirect to messages');
+          } else {
+            return Linking.openURL(message);
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    };
+
+    // Does the device is able to call from dialer
+    Linking.canOpenURL(phoneNumber).then(supported => {
+      if (!supported) {
+        Alert.alert('Unable to call from this device');
+      } else {
+        return Linking.openURL(phoneNumber);
+      }
+    });
+  };
+
+  // RemoveContact
+  removeContact = key => {
+    Alert.alert('Delete Contact ?', `${this.state.fname} ${this.state.lname}`, [
+      {
+        text: 'Cancel',
+        onPress: () => console.log('cancel tapped')
+      },
+      {
+        text: 'OK',
+        onPress: async () => {
+          await AsyncStorage.removeItem(key)
+            .then(() => {
+              this.props.navigation.goBack();
+            })
+            .catch(error => {
+              console.log(error);
+            });
+        }
+      }
+    ]);
+  };
+
+  // Edit Contact
+  editContact = key => {
+    this.props.navigation.navigate('EditContact', { key: key });
+  };
+
   render() {
     return (
-      <View style={styles.container}>
+      <ScrollView>
+        <Card>
+          <CardItem
+            style={{
+              backgroundColor: '#0A79DF',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
+            <Text style={{ fontSize: 100, padding: 18, color: '#fff' }}>
+              {this.state.fname[0]} {this.state.lname[0]}
+            </Text>
+          </CardItem>
+          <CardItem
+            style={{
+              backgroundColor: '#74B9FF',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 24,
+                color: '#fff'
+              }}
+            >
+              {this.state.fname} {this.state.lname}
+            </Text>
+          </CardItem>
+          <CardItem style={{ flexDirection: 'row' }}>
+            <Text style={styles.contactText}>{this.state.phonenumber}</Text>
+            <TouchableOpacity
+              style={{ marginHorizontal: 18 }}
+              onPress={() => this.callNumber(this.state.phonenumber)}
+            >
+              <FontAwesome name='phone' size={30} />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => this.sendMessage(this.state.phonenumber)}
+            >
+              <Entypo name='new-message' size={30} />
+            </TouchableOpacity>
+          </CardItem>
+          <CardItem style={{ flexDirection: 'row', marginVertical: 24 }}>
+            <Text style={styles.contactText}>{this.state.email}</Text>
+            <View style={{ right: 0 }}>
+              <TouchableOpacity>
+                <Entypo name='email' size={30} />
+              </TouchableOpacity>
+            </View>
+          </CardItem>
+          <CardItem style={{ flexDirection: 'row' }}>
+            <Text style={styles.contactText}>{this.state.address}</Text>
+            <Entypo
+              name='location'
+              size={30}
+              color='#FFC733'
+              style={{ borderColor: '#ccc', borderRadius: 15 }}
+            />
+          </CardItem>
+        </Card>
         <View
           style={{
             alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: '#74B9FF'
+            justifyContent: 'center'
           }}
         >
-          <Text style={{ fontSize: 60, color: '#fff' }}>
-            {this.state.fname[0]}
-            {this.state.lname[0]}
-          </Text>
+          <Button
+            style={{ marginVertical: 18 }}
+            primary
+            full
+            rounded
+            onPress={() => this.editContact(this.state.key)}
+          >
+            <Text
+              style={{
+                color: '#fff',
+                fontSize: 18
+              }}
+            >
+              Edit Contact
+            </Text>
+          </Button>
+          <Button
+            title='Remove Contact'
+            full
+            danger
+            rounded
+            onPress={() => this.removeContact(this.state.key)}
+          >
+            <Text
+              style={{
+                color: '#fff',
+                fontSize: 18
+              }}
+            >
+              Remove Contact
+            </Text>
+          </Button>
         </View>
-        <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-          <Text style={{ color: '#336699' }}>{this.state.fname}</Text>
-          <Text style={{ color: '#336699' }}>{this.state.lname}</Text>
-          style={{ color: '#336699' }}
-        </View>
-      </View>
+      </ScrollView>
     );
   }
 }
@@ -61,8 +221,10 @@ export default ViewContact;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center'
+    flex: 1
+  },
+  contactText: {
+    fontSize: 24,
+    color: '#336699'
   }
 });
