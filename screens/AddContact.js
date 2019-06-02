@@ -6,7 +6,8 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   AsyncStorage,
-  ScrollView
+  ScrollView,
+  KeyboardAvoidingView
 } from 'react-native';
 import {
   Content,
@@ -68,7 +69,7 @@ class AddContact extends Component {
         style={{ flex: 1 }}
       >
         <Container style={styles.container}>
-          <ScrollView>
+          <KeyboardAvoidingView>
             <Form>
               <Item floatingLabel style={{ marginTop: 20 }}>
                 <Label>First Name</Label>
@@ -137,7 +138,7 @@ class AddContact extends Component {
               </View>
             </Form>
             <View style={{ flex: 1, backgroundColor: '#fff', height: 400 }} />
-          </ScrollView>
+          </KeyboardAvoidingView>
         </Container>
       </TouchableWithoutFeedback>
     );

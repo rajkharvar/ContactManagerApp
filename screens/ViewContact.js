@@ -10,11 +10,15 @@ import {
   ScrollView,
   TouchableOpacity
 } from 'react-native';
-import { Card, CardItem, Button } from 'native-base';
+import { Card, CardItem, Button, Item, ListItem } from 'native-base';
 import { FontAwesome } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
+import { AntDesign } from '@expo/vector-icons';
 
 class ViewContact extends Component {
+  static navigationOptions = {
+    title: 'Contact Details'
+  };
   constructor(props) {
     super(props);
     this.state = {
@@ -83,6 +87,22 @@ class ViewContact extends Component {
       });
   };
 
+  // Send Email
+  sendMail = email => {
+    let message = `mailto:${email}`;
+    Linking.canOpenURL(message)
+      .then(supported => {
+        if (!supported) {
+          Alert.alert('Mail service not supported in this device');
+        } else {
+          return Linking.openURL(message);
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+
   // RemoveContact
   removeContact = key => {
     Alert.alert('Delete Contact ?', `${this.state.fname} ${this.state.lname}`, [
@@ -141,39 +161,82 @@ class ViewContact extends Component {
               {this.state.fname} {this.state.lname}
             </Text>
           </CardItem>
-          <CardItem style={{ flexDirection: 'row' }}>
-            <Text style={styles.contactText}>{this.state.phonenumber}</Text>
-            <TouchableOpacity
-              style={{ marginHorizontal: 18 }}
-              onPress={() => this.callNumber(this.state.phonenumber)}
-            >
-              <FontAwesome name='phone' size={30} />
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {
-                this.sendMsg(this.state.phonenumber);
-              }}
-            >
-              <Entypo name='new-message' size={30} />
-            </TouchableOpacity>
-          </CardItem>
-          <CardItem style={{ flexDirection: 'row', marginVertical: 24 }}>
-            <Text style={styles.contactText}>{this.state.email}</Text>
-            <View style={{ right: 0 }}>
-              <TouchableOpacity>
-                <Entypo name='email' size={30} />
+          <ListItem itemDivider>
+            <Text>Phone</Text>
+          </ListItem>
+          <ListItem style={{ flexDirection: 'row', flex: 1 }}>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.contactText}>{this.state.phonenumber}</Text>
+            </View>
+            <View style={{ justifyContent: 'flex-end', flexDirection: 'row' }}>
+              <TouchableOpacity
+                onPress={() => this.callNumber(this.state.phonenumber)}
+                style={{
+                  height: 40,
+                  width: 40,
+                  backgroundColor: '#fff',
+                  borderRadius: 20,
+                  borderWidth: 1,
+                  borderColor: '#336699',
+                  color: '#336699',
+                  justifyContent: 'center',
+                  alignItems: 'center'
+                }}
+              >
+                <FontAwesome
+                  name='phone'
+                  size={30}
+                  style={{ color: '#336699' }}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.iconContainer}
+                onPress={() => this.sendMsg(this.state.phonenumber)}
+              >
+                <AntDesign
+                  name='message1'
+                  size={25}
+                  style={{ color: '#336699', alignSelf: 'center' }}
+                />
               </TouchableOpacity>
             </View>
-          </CardItem>
-          <CardItem style={{ flexDirection: 'row' }}>
-            <Text style={styles.contactText}>{this.state.address}</Text>
-            <Entypo
-              name='location'
-              size={30}
-              color='#FFC733'
-              style={{ borderColor: '#ccc', borderRadius: 15 }}
-            />
-          </CardItem>
+          </ListItem>
+
+          <ListItem itemDivider>
+            <Text>E-mail</Text>
+          </ListItem>
+          <ListItem style={{ flexDirection: 'row' }}>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.contactText}>{this.state.email}</Text>
+            </View>
+            <View style={{ justifyContent: 'flex-end' }}>
+              <TouchableOpacity style={styles.iconContainer}>
+                <Entypo
+                  name='mail-with-circle'
+                  size={25}
+                  style={{ color: '#336699' }}
+                />
+              </TouchableOpacity>
+            </View>
+          </ListItem>
+          <ListItem itemDivider>
+            <Text>Address</Text>
+          </ListItem>
+          <ListItem>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.contactText}>{this.state.address}</Text>
+            </View>
+            <View style={{ justifyContent: 'flex-end' }}>
+              <TouchableOpacity style={styles.iconContainer}>
+                <Entypo
+                  name='location'
+                  size={20}
+                  color='#336699'
+                  style={{ color: '#336699' }}
+                />
+              </TouchableOpacity>
+            </View>
+          </ListItem>
         </Card>
         <View
           style={{
@@ -182,16 +245,22 @@ class ViewContact extends Component {
           }}
         >
           <Button
-            style={{ marginVertical: 18 }}
-            primary
-            full
-            rounded
+            style={{
+              marginVertical: 18,
+              width: '100%',
+              justifyContent: 'center',
+              alignItems: 'center',
+              backgroundColor: '#fff',
+              borderWidth: 2,
+              borderColor: '#74B9FF'
+            }}
             onPress={() => this.editContact(this.state.key)}
           >
             <Text
               style={{
-                color: '#fff',
-                fontSize: 18
+                color: '#336699',
+                fontSize: 18,
+                fontWeight: '500'
               }}
             >
               Edit Contact
@@ -199,15 +268,21 @@ class ViewContact extends Component {
           </Button>
           <Button
             title='Remove Contact'
-            full
-            danger
-            rounded
+            style={{
+              width: '100%',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderWidth: 2,
+              borderColor: '#E44236',
+              backgroundColor: '#fff'
+            }}
             onPress={() => this.removeContact(this.state.key)}
           >
             <Text
               style={{
-                color: '#fff',
-                fontSize: 18
+                color: '#B83227',
+                fontSize: 18,
+                fontWeight: '500'
               }}
             >
               Remove Contact
@@ -226,6 +301,18 @@ const styles = StyleSheet.create({
   },
   contactText: {
     fontSize: 24,
-    color: '#336699'
+    color: '#47535E'
+  },
+  iconContainer: {
+    height: 40,
+    width: 40,
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#336699',
+    color: '#336699',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 10
   }
 });
