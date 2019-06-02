@@ -142,7 +142,8 @@ class ViewContact extends Component {
             }}
           >
             <Text style={{ fontSize: 100, padding: 18, color: '#fff' }}>
-              {this.state.fname[0]} {this.state.lname[0]}
+              {this.state.fname[0].toUpperCase()}{' '}
+              {this.state.lname[0].toUpperCase()}
             </Text>
           </CardItem>
           <CardItem
@@ -210,7 +211,10 @@ class ViewContact extends Component {
               <Text style={styles.contactText}>{this.state.email}</Text>
             </View>
             <View style={{ justifyContent: 'flex-end' }}>
-              <TouchableOpacity style={styles.iconContainer}>
+              <TouchableOpacity
+                style={styles.iconContainer}
+                onPress={() => this.sendMail(this.state.email)}
+              >
                 <Entypo
                   name='mail-with-circle'
                   size={25}
